@@ -419,8 +419,7 @@ function buildTeamMessage(date,records){
       msg+=' '+icon;
       if(r.followup)msg+=' 📌';
       if(r.note){
-        var short=r.note.length>13?r.note.slice(0,13)+'...':r.note;
-        msg+=NL+'   └'+short;
+        msg+=NL+'   └'+r.note;
       }
       msg+=NL;
     });
