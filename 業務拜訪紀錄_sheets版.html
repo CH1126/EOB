@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>貳輪嶼 業務拜訪紀錄</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#000000;
+  --blue:#4060E9;
+  --lime:#A0DF02;
+  --white:#ffffff;
+  --gray:#f2f2f2;
+  --mid-gray:#d0d0d0;
+  --text-gray:#555;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;background:var(--gray);min-height:100vh}
+.header{background:var(--black);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.header-brand{display:flex;align-items:baseline;gap:8px}
+.header-logo{font-size:18px;font-weight:900;color:var(--white);letter-spacing:-0.5px}
+.header-logo span{color:var(--lime)}
+.header-tag{background:var(--lime);color:var(--black);font-size:10px;font-weight:700;padding:3px 8px;letter-spacing:1px}
+.tab-bar{background:var(--black);display:flex;border-top:1px solid #222}
+.tab{flex:1;padding:12px 8px;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;border:none;background:none;letter-spacing:0.5px;text-transform:uppercase;border-bottom:3px solid transparent;transition:all 0.15s}
+.tab.active{color:var(--lime);border-bottom:3px solid var(--lime)}
+.content{padding:16px;max-width:480px;margin:0 auto}
+.panel{display:none}.panel.active{display:block}
+.section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;margin-top:20px}
+.section-label:first-child{margin-top:0}
+.form-card{background:var(--white);border:2px solid var(--black);padding:20px}
+label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--black);margin-bottom:5px;margin-top:16px}
+label:first-of-type{margin-top:0}
+input,select,textarea{width:100%;border:1.5px solid var(--black);border-radius:0;padding:10px 12px;font-size:15px;color:var(--black);background:var(--white);-webkit-appearance:none;font-family:inherit;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--black);background:#f8f8f8}
+textarea{resize:vertical;min-height:80px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.btn-row{display:flex;gap:8px;margin-top:20px}
+.btn{flex:1;padding:14px;border:2px solid var(--black);font-size:14px;font-weight:700;cursor:pointer;background:var(--white);color:var(--black);letter-spacing:0.5px;text-transform:uppercase;font-family:inherit;transition:all 0.1s}
+.btn:active{transform:scale(0.98)}
+.btn.primary{background:var(--lime);color:var(--black);border-color:var(--lime)}
+.btn.primary:hover{background:#8fc400}
+.btn.blue{background:var(--blue);color:var(--white);border-color:var(--blue)}
+.btn.blue:hover{background:#2e4ed4}
+.msg{font-size:13px;font-weight:600;padding:10px 14px;margin-top:12px;border-left:4px solid}
+.ok{background:#f0faf0;color:#1a6b1a;border-color:#1a6b1a}
+.err{background:#fff0f0;color:#b81c1c;border-color:#b81c1c}
+.info{background:#f0f4ff;color:var(--blue);border-color:var(--blue)}
+.counter-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.metric{background:var(--black);padding:14px 10px;text-align:center}
+.metric-n{font-size:28px;font-weight:900;color:var(--lime);line-height:1}
+.metric-l{font-size:10px;font-weight:700;letter-spacing:1px;color:#888;margin-top:4px;text-transform:uppercase}
+.metric.blue-bg{background:var(--blue)}
+.metric.blue-bg .metric-n{color:var(--lime)}
+.record{background:var(--white);border:2px solid var(--black);padding:14px;margin-bottom:8px}
+.record-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.record-name{font-size:16px;font-weight:900;color:var(--black)}
+.record-top-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.record-sales{font-size:11px;font-weight:700;background:var(--black);color:var(--lime);padding:2px 8px;letter-spacing:0.5px}
+.delete-btn{background:none;border:1.5px solid #ff3b3b;color:#ff3b3b;font-size:10px;font-weight:700;cursor:pointer;padding:2px 7px;letter-spacing:0.5px;text-transform:uppercase;border-radius:0}
+.delete-btn:hover{background:#ff3b3b;color:#fff}
+.record-meta{font-size:12px;color:var(--text-gray);margin-top:6px;line-height:1.7}
+.record-badges{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;letter-spacing:0.5px;text-transform:uppercase}
+.b-won{background:var(--lime);color:var(--black)}
+.b-lost{background:#ff3b3b;color:var(--white)}
+.b-pending{background:var(--blue);color:var(--white)}
+.b-synced{background:var(--black);color:var(--lime)}
+.b-local{background:var(--mid-gray);color:#444}
+.empty{text-align:center;padding:2.5rem 1rem;color:#aaa;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border:2px dashed var(--mid-gray)}
+.setting-block{background:var(--white);border:2px solid var(--black);padding:16px;margin-bottom:12px}
+.setting-title{font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.setting-sub{font-size:12px;color:var(--text-gray);margin-bottom:12px}
+.setting-row{display:flex;gap:8px;margin-top:8px}
+.setting-row input{flex:1}
+.setting-row .btn{flex:0;padding:10px 14px;font-size:12px}
+.preview{background:var(--black);color:var(--lime);padding:14px;font-size:12px;white-space:pre-wrap;line-height:1.8;max-height:280px;overflow-y:auto;font-family:monospace;margin-top:8px;letter-spacing:0.3px}
+.line-btn{width:100%;padding:16px;background:var(--blue);color:var(--white);border:none;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:1px;text-transform:uppercase;font-family:inherit;margin-top:4px;transition:background 0.2s}
+.line-btn:disabled{background:#999;cursor:not-allowed}
+.divider{height:2px;background:var(--black);margin:20px 0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo"><span>貳輪嶼</span> MOTOR ISLAND</div>
+  </div>
+  <div class="header-tag">業務日報系統</div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab('form')">新增紀錄</button>
+  <button class="tab" onclick="switchTab('list')">今日紀錄</button>
+  <button class="tab" onclick="switchTab('settings')">設定</button>
+</div>
+
+<div class="content">
+
+  <!-- FORM -->
+  <div id="tab-form" class="panel active">
+    <div class="section-label">新增拜訪紀錄</div>
+    <div class="form-card">
+      <label>日期</label>
+      <input id="f-date" type="date" style="color:var(--black)" onfocus="this.value=this.value||today()">
+      <label>項目</label>
+      <select id="f-item">
+        <option value="">— 請選擇 —</option>
+        <option>找車</option>
+        <option>估價</option>
+      </select>
+      <label>客戶姓名</label>
+      <input id="f-name" type="text" placeholder="王小明">
+      <label>需求偏好</label>
+      <input id="f-product" type="text" placeholder="預約:SL#1234、現場:2萬內代步車">
+      <label>成交狀態</label>
+      <select id="f-status">
+        <option value="">— 請選擇 —</option>
+        <option>已成交</option>
+        <option>不考慮</option>
+        <option>考慮中-已加LINE</option>
+        <option>考慮中-沒留聯絡方式</option>
+      </select>
+      <label>是否回追</label>
+      <div style="display:flex;gap:8px">
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px solid #ccc;background:#fff;cursor:pointer;font-size:14px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin:0;transition:all 0.1s" id="followup-no" onclick="setFollowup(false)">
+          <span id="followup-no-icon" style="font-size:18px">○</span> 不用
+        </label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px solid #ccc;background:#fff;cursor:pointer;font-size:14px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin:0;transition:all 0.1s" id="followup-yes" onclick="setFollowup(true)">
+          <span id="followup-yes-icon" style="font-size:18px">○</span> 回追
+        </label>
+      </div>
+      <input id="f-followup" type="hidden" value="false">
+
+      <label>後續備註</label>
+      <textarea id="f-note" placeholder="沒成交的原因、成交後的狀態:補證件/等貸款"></textarea>
+      <label>業務姓名</label>
+      <select id="f-sales">
+        <option value="">— 請選擇 —</option>
+        <option>阿毓</option>
+        <option>黑黑</option>
+        <option>庭榆</option>
+        <option>咖啡</option>
+        <option>阿昇</option>
+        <option>GNA</option>
+      </select>
+      <div class="btn-row">
+        <button class="btn primary" onclick="submitRecord()">存檔</button>
+        <button class="btn blue" onclick="saveDraft()">暫存</button>
+        <button class="btn" onclick="clearForm()">清除</button>
+      </div>
+      <div id="form-msg"></div>
+    </div>
+
+    <div id="draft-section" style="display:none;margin-top:16px">
+      <div class="section-label">暫存中的客人</div>
+      <div id="draft-list"></div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div id="tab-list" class="panel">
+
+    <!-- A. 我的紀錄 -->
+    <div class="section-label">A．我的紀錄</div>
+    <div class="counter-bar">
+      <div class="metric"><div class="metric-n" id="cnt-total">0</div><div class="metric-l">今日拜訪</div></div>
+      <div class="metric blue-bg"><div class="metric-n" id="cnt-won">0</div><div class="metric-l">已成交</div></div>
+      <div class="metric"><div class="metric-n" id="cnt-pending">0</div><div class="metric-l">考慮中</div></div>
+    </div>
+    <div id="record-list"></div>
+    <div class="section-label" style="margin-top:16px">我的業績預覽</div>
+    <div id="my-preview" class="preview" style="margin-bottom:8px;user-select:text;-webkit-user-select:text">（尚無今日紀錄）</div>
+    <button class="btn blue" style="width:100%;margin-bottom:4px" onclick="copyMyPreview()">一鍵複製我的業績</button>
+    <div id="copy-msg"></div>
+
+    <div class="divider"></div>
+
+    <!-- B. 今日全隊 -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;margin-top:20px">
+      <div class="section-label" style="margin:0">B．今日全店（Notion）</div>
+      <button onclick="loadTeamRecords()" style="font-size:11px;font-weight:700;background:var(--black);color:var(--lime);border:none;padding:4px 10px;cursor:pointer;letter-spacing:0.5px">重新整理</button>
+    </div>
+    <div class="counter-bar">
+      <div class="metric"><div class="metric-n" id="team-total">-</div><div class="metric-l">全隊拜訪</div></div>
+      <div class="metric blue-bg"><div class="metric-n" id="team-won">-</div><div class="metric-l">已成交</div></div>
+      <div class="metric"><div class="metric-n" id="team-pending">-</div><div class="metric-l">考慮中</div></div>
+    </div>
+    <div id="team-list"><div class="empty">點「重新整理」載入全店紀錄</div></div>
+    <div class="section-label" style="margin-top:16px">日報預覽</div>
+    <div id="msg-preview" class="preview" style="margin-bottom:8px">（點「重新整理」後顯示）</div>
+    <button class="line-btn" id="send-btn" onclick="sendNow()">傳送今日全店日報到 LINE →</button>
+    <div id="list-msg"></div>
+
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="tab-settings" class="panel">
+    <div class="section-label">系統狀態</div>
+    <div class="setting-block">
+      <div class="setting-title">雲端連線</div>
+      <div id="config-status" class="setting-sub">讀取中...</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const GAS_URL='__NEW_GAS_URL__';
+const DB_KEY='mi_sales_v1';
+const DRAFT_KEY='mi_drafts_v1';
+let lineToken='',lineGroupId='',sendCooldown=false,saveCooldown=false;
+
+function today(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function getRecords(){try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]')}catch{return[]}}
+function saveRecords(r){localStorage.setItem(DB_KEY,JSON.stringify(r))}
+function todayRecords(){return getRecords().filter(r=>r.date===today())}
+function getDrafts(){try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||'[]')}catch{return[]}}
+function saveDrafts(d){localStorage.setItem(DRAFT_KEY,JSON.stringify(d))}
+
+async function loadConfig(){
+  try{
+    var res=await fetch(GAS_URL);
+    var cfg=await res.json();
+    lineToken=cfg.lineToken||'';lineGroupId=cfg.lineGroupId||'';
+    var el=document.getElementById('config-status');
+    if(el)el.textContent=lineToken?'✓ 雲端設定已讀取，LINE 連線正常':'⚠ 無法讀取設定，請聯絡管理人';
+  }catch(e){
+    var el=document.getElementById('config-status');
+    if(el)el.textContent='⚠ 雲端連線失敗：'+e.message;
+  }
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(function(b,i){b.classList.toggle('active',['form','list','settings'][i]===t);});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='list')renderList();
+  if(t==='form')renderDrafts();
+}
+
+function showMsg(id,msg,type,dur){
+  if(dur===undefined)dur=4000;
+  var el=document.getElementById(id);
+  el.innerHTML='<div class="msg '+type+'">'+msg+'</div>';
+  if(dur>0)setTimeout(function(){el.innerHTML=''},dur);
+}
+
+function getFormData(){
+  return {
+    date:document.getElementById('f-date').value,
+    item:document.getElementById('f-item').value,
+    name:document.getElementById('f-name').value.trim(),
+    product:document.getElementById('f-product').value.trim(),
+    status:document.getElementById('f-status').value,
+    note:document.getElementById('f-note').value.trim(),
+    salesName:document.getElementById('f-sales').value,
+    followup:document.getElementById('f-followup').value==='true'
+  };
+}
+
+function fillForm(data){
+  document.getElementById('f-date').value=data.date||today();
+  document.getElementById('f-item').value=data.item||'';
+  document.getElementById('f-name').value=data.name||'';
+  document.getElementById('f-product').value=data.product||'';
+  document.getElementById('f-status').value=data.status||'';
+  document.getElementById('f-note').value=data.note||'';
+  document.getElementById('f-sales').value=data.salesName||'';
+  setFollowup(data.followup||false);
+}
+
+// 暫存目前填寫的內容
+function saveDraft(){
+  var data=getFormData();
+  if(!data.name){showMsg('form-msg','請至少填寫客戶姓名才能暫存','err');return;}
+  var drafts=getDrafts();
+  data.draftId=Date.now();
+  drafts.push(data);
+  saveDrafts(drafts);
+  clearForm();
+  renderDrafts();
+  showMsg('form-msg','✓ 已暫存「'+data.name+'」，可繼續填寫下一位','ok');
+}
+
+// 叫回暫存
+function loadDraft(draftId){
+  var drafts=getDrafts();
+  var draft=drafts.find(function(d){return d.draftId===draftId;});
+  if(!draft)return;
+  // 如果表單有內容先問要不要暫存
+  var current=getFormData();
+  if(current.name){
+    if(!confirm('目前表單有內容，要先暫存嗎？確定=暫存後叫回，取消=直接覆蓋')){
+      // 直接覆蓋
+    } else {
+      saveDraft();
+    }
+  }
+  fillForm(draft);
+  // 從暫存清單移除
+  saveDrafts(drafts.filter(function(d){return d.draftId!==draftId;}));
+  renderDrafts();
+  showMsg('form-msg','已叫回「'+draft.name+'」的暫存資料','info');
+}
+
+// 刪除暫存
+function deleteDraft(draftId){
+  saveDrafts(getDrafts().filter(function(d){return d.draftId!==draftId;}));
+  renderDrafts();
+}
+
+function renderDrafts(){
+  var drafts=getDrafts();
+  var section=document.getElementById('draft-section');
+  var el=document.getElementById('draft-list');
+  if(!drafts.length){section.style.display='none';return;}
+  section.style.display='block';
+  el.innerHTML=drafts.map(function(d){
+    return '<div class="record" style="margin-bottom:8px"><div class="record-header"><div class="record-name">'+d.name+'</div><div class="record-top-right">'+(d.salesName?'<div class="record-sales">'+d.salesName+'</div>':'')+'</div></div><div class="record-meta">'+(d.status?'狀態：'+d.status:'未選狀態')+(d.item?' · '+d.item:'')+'</div><div class="record-badges" style="margin-top:8px;display:flex;gap:6px"><button class="btn blue" style="flex:1;padding:8px;font-size:12px" onclick="loadDraft('+d.draftId+')">叫回繼續填</button><button class="delete-btn" onclick="deleteDraft('+d.draftId+')">✕ 刪除</button></div></div>';
+  }).join('');
+}
+
+async function pushToNotion(record){
+  var payload={name:record.name||'',date:record.date||'',item:record.item||'',product:record.product||'',status:record.status||'',note:record.note||'',salesName:record.salesName||'',followup:record.followup||false};
+  try{
+    var res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    var text=await res.text();
+    try{var data=JSON.parse(text);if(data.success)return{ok:true};return{ok:false,msg:data.error||'GAS錯誤'};}
+    catch(e2){if(res.ok||text.includes('OK'))return{ok:true};return{ok:false,msg:'回應格式錯誤'};}
+  }catch(e){return{ok:false,msg:e.message};}
+}
+
+async function submitRecord(){
+  if(saveCooldown){showMsg('form-msg','請稍候，10 秒內不能重複存檔','info');return;}
+  var data=getFormData();
+  if(!data.date){showMsg('form-msg','請選擇日期','err');return;}
+  if(!data.name){showMsg('form-msg','請填寫客戶姓名','err');return;}
+  if(!data.salesName){showMsg('form-msg','請選擇業務姓名','err');return;}
+  if(!data.status){showMsg('form-msg','請選擇成交狀態','err');return;}
+  showMsg('form-msg','同步中，請稍候...','info',0);
+  saveCooldown=true;
+  var saveBtn=document.querySelector('.btn.primary');
+  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='冷卻中...';}
+  var sec=10;
+  var timer=setInterval(function(){
+    sec--;
+    if(sec<=0){clearInterval(timer);saveCooldown=false;if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='存檔';}}
+    else if(saveBtn)saveBtn.textContent='冷卻中 '+sec+'s';
+  },1000);
+  var rec={id:Date.now(),date:data.date,item:data.item,name:data.name,product:data.product,status:data.status,note:data.note,salesName:data.salesName,followup:data.followup,synced:false};
+  var result=await pushToNotion(rec);
+  rec.synced=result.ok;
+  var all=getRecords();all.push(rec);saveRecords(all);
+  if(result.ok){showMsg('form-msg','✓ 已成功同步到 Notion！','ok');clearForm();}
+  else{showMsg('form-msg','⚠ 已存本機，Notion 失敗：'+(result.msg||''),'err',8000);}
+}
+
+function clearForm(){
+  document.getElementById('f-date').value=today();
+  ['f-item','f-name','f-product','f-status','f-note','f-sales'].forEach(function(id){document.getElementById(id).value='';});
+  setFollowup(false);
+}
+
+function deleteRecord(id){
+  if(!confirm('確定要刪除這筆紀錄嗎？（只會從本機刪除，Notion 需手動刪除）'))return;
+  saveRecords(getRecords().filter(function(r){return r.id!==id;}));
+  renderList();
+}
+
+function statusBadge(s){
+  if(s==='已成交')return'<span class="badge b-won">'+s+'</span>';
+  if(s==='不考慮')return'<span class="badge b-lost">'+s+'</span>';
+  if(s)return'<span class="badge b-pending">'+s+'</span>';
+  return'';
+}
+
+function buildMyMessage(recs){
+  var NL=String.fromCharCode(10);
+  var msg='📋 我的業績 '+today()+NL+'共 '+recs.length+' 筆'+NL+'──────────────'+NL;
+  recs.forEach(function(r,i){
+    msg+=(i+1)+'. '+r.name;
+    if(r.item)msg+='【'+r.item+'】';
+    msg+=NL+'   狀態：'+(r.status||'未填');
+    if(r.product)msg+=NL+'   需求：'+r.product;
+    if(r.note)msg+=NL+'   備註：'+r.note;
+    msg+=NL;
+  });
+  return msg;
+}
+
+// 格式：按業務分區 + 全店彙整
+function buildTeamMessage(date,records){
+  var NL=String.fromCharCode(10);
+  var won=records.filter(function(r){return r.status==='已成交';}).length;
+  var pending=records.filter(function(r){return r.status&&r.status.startsWith('考慮中');}).length;
+  var lost=records.filter(function(r){return r.status==='不考慮';}).length;
+
+  var byStaff={};
+  records.forEach(function(r){
+    var name=r.salesName||'未填業務';
+    if(!byStaff[name])byStaff[name]=[];
+    byStaff[name].push(r);
+  });
+
+  var msg='📊 貳輪嶼 業務日報 '+date+NL;
+  msg+='─────────────'+NL;
+
+  Object.keys(byStaff).forEach(function(staff){
+    var list=byStaff[staff];
+    var sw=list.filter(function(r){return r.status==='已成交';}).length;
+    var sp=list.filter(function(r){return r.status&&r.status.startsWith('考慮中');}).length;
+    msg+=NL+'👤 '+staff+'｜'+list.length+'位 ✅'+sw+' 🔄'+sp+NL;
+    list.forEach(function(r,i){
+      var s=r.status||'';
+      var icon=s==='已成交'?'✅':s==='不考慮'?'❌':s.indexOf('已加')>-1?'🔄有':s.indexOf('沒留')>-1?'🔄無':'🔄';
+      msg+=(i+1)+'. '+r.name;
+      if(r.item)msg+='【'+r.item+'】';
+      msg+=' '+icon;
+      if(r.followup)msg+=' 📌';
+      if(r.product)msg+=NL+'   需求：'+r.product;
+      if(r.note)msg+=NL+'   └'+r.note;
+      msg+=NL;
+    });
+  });
+
+  msg+=NL+'─────────────'+NL;
+  msg+='全店 '+records.length+'位｜✅'+won+' 🔄'+pending+' ❌'+lost+NL;
+  return msg;
+}
+
+function renderList(){
+  var recs=todayRecords();
+  document.getElementById('cnt-total').textContent=recs.length;
+  document.getElementById('cnt-won').textContent=recs.filter(function(r){return r.status==='已成交';}).length;
+  document.getElementById('cnt-pending').textContent=recs.filter(function(r){return r.status&&r.status.startsWith('考慮中');}).length;
+  var el=document.getElementById('record-list');
+  var preview=document.getElementById('my-preview');
+  if(!recs.length){
+    el.innerHTML='<div class="empty">今日尚無拜訪紀錄</div>';
+    if(preview)preview.textContent='（尚無今日紀錄）';
+    return;
+  }
+  if(preview)preview.textContent=buildMyMessage(recs);
+  el.innerHTML=recs.map(function(r){
+    return '<div class="record"><div class="record-header"><div class="record-name">'+r.name+'</div><div class="record-top-right">'+(r.salesName?'<div class="record-sales">'+r.salesName+'</div>':'')+'<button class="delete-btn" onclick="deleteRecord('+r.id+')">✕ 刪除</button></div></div><div class="record-meta">'+r.date+(r.item?' &nbsp;·&nbsp; '+r.item:'')+(r.product?' &nbsp;·&nbsp; '+r.product:'')+(r.note?'<br>備註：'+r.note:'')+'</div><div class="record-badges">'+statusBadge(r.status)+'<span class="badge '+(r.synced?'b-synced':'b-local')+'">'+(r.synced?'Notion ✓':'本機')+'</span></div></div>';
+  }).join('');
+}
+
+async function sendViaLine(msg){
+  try{
+    var res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'sendLine',message:msg})});
+    var text=await res.text();
+    try{var data=JSON.parse(text);return data.success===true;}
+    catch(e2){return res.ok||text.includes('OK');}
+  }catch(e){return false;}
+}
+
+async function sendNow(){
+  if(sendCooldown){showMsg('list-msg','請稍候，10 秒內不能重複傳送','info');return;}
+  showMsg('list-msg','從 Notion 讀取今日全店資料...','info',0);
+  sendCooldown=true;
+  var btn=document.getElementById('send-btn');
+  btn.disabled=true;
+  var msg=null;
+  try{
+    var res=await fetch(GAS_URL+'?action=getToday&date='+today());
+    var data=await res.json();
+    if(data.records&&data.records.length>0){
+      msg=buildTeamMessage(today(),data.records);
+      document.getElementById('msg-preview').textContent=msg;
+    }
+  }catch(e){}
+  if(!msg){
+    showMsg('list-msg','今日尚無紀錄可傳送','info');
+    sendCooldown=false;btn.disabled=false;btn.textContent='傳送今日全店日報到 LINE →';
+    return;
+  }
+  showMsg('list-msg','傳送中...','info',0);
+  var sec=10;
+  btn.textContent='冷卻中 '+sec+' 秒...';
+  var timer=setInterval(function(){
+    sec--;
+    if(sec<=0){clearInterval(timer);sendCooldown=false;btn.disabled=false;btn.textContent='傳送今日全店日報到 LINE →';}
+    else btn.textContent='冷卻中 '+sec+' 秒...';
+  },1000);
+  var ok=await sendViaLine(msg);
+  showMsg('list-msg',ok?'✓ 已傳送今日全店日報到 LINE 群組':'傳送失敗，請確認設定',ok?'ok':'err');
+}
+
+function copyMyPreview(){
+  var text=document.getElementById('my-preview').textContent;
+  if(!text||text==='（尚無今日紀錄）'){showMsg('copy-msg','尚無內容可複製','info');return;}
+  navigator.clipboard.writeText(text).then(function(){
+    showMsg('copy-msg','✓ 已複製到剪貼簿','ok');
+  }).catch(function(){
+    var ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    showMsg('copy-msg','✓ 已複製到剪貼簿','ok');
+  });
+}
+
+async function loadTeamRecords(){
+  var el=document.getElementById('team-list');
+  el.innerHTML='<div class="empty">載入中...</div>';
+  try{
+    var res=await fetch(GAS_URL+'?action=getToday&date='+today());
+    var data=await res.json();
+    if(!data.records||data.records.length===0){
+      ['team-total','team-won','team-pending'].forEach(function(id){document.getElementById(id).textContent='0';});
+      el.innerHTML='<div class="empty">今日全店尚無紀錄</div>';
+      document.getElementById('msg-preview').textContent='（今日尚無紀錄）';
+      return;
+    }
+    var recs=data.records;
+    document.getElementById('team-total').textContent=recs.length;
+    document.getElementById('team-won').textContent=recs.filter(function(r){return r.status==='已成交';}).length;
+    document.getElementById('team-pending').textContent=recs.filter(function(r){return r.status&&r.status.startsWith('考慮中');}).length;
+    document.getElementById('msg-preview').textContent=buildTeamMessage(today(),recs);
+    el.innerHTML=recs.map(function(r){
+      return '<div class="record"><div class="record-header"><div class="record-name">'+r.name+'</div><div class="record-top-right">'+(r.salesName?'<div class="record-sales">'+r.salesName+'</div>':'')+'</div></div><div class="record-meta">'+(r.item?r.item+' &nbsp;·&nbsp; ':'')+(r.product||'')+(r.note?'<br>備註：'+r.note:'')+'</div><div class="record-badges">'+statusBadge(r.status)+'</div></div>';
+    }).join('');
+  }catch(e){
+    el.innerHTML='<div class="empty">載入失敗，請確認網路</div>';
+  }
+}
+
+var _followup=false;
+function setFollowup(val){
+  _followup=val;
+  document.getElementById('f-followup').value=val;
+  var yes=document.getElementById('followup-yes');
+  var no=document.getElementById('followup-no');
+  if(val){
+    yes.style.background='var(--lime)';yes.style.borderColor='var(--lime)';yes.style.color='#000';
+    document.getElementById('followup-yes-icon').textContent='✓';
+    no.style.background='#fff';no.style.borderColor='#ccc';no.style.color='var(--black)';
+    document.getElementById('followup-no-icon').textContent='○';
+  } else {
+    no.style.background='var(--black)';no.style.borderColor='var(--black)';no.style.color='var(--lime)';
+    document.getElementById('followup-no-icon').textContent='✓';
+    yes.style.background='#fff';yes.style.borderColor='#ccc';yes.style.color='var(--black)';
+    document.getElementById('followup-yes-icon').textContent='○';
+  }
+}
+loadConfig();
+setFollowup(false);
+renderDrafts();
+window.onload=function(){document.getElementById('f-date').value=today();};
+</script>
+</body>
+</html>
