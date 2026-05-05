@@ -321,7 +321,7 @@ function renderDrafts(){
   }).join('');
 }
 
-async function pushToNotion(record){
+async function pushToSheets(record){
   var payload={name:record.name||'',date:record.date||'',item:record.item||'',product:record.product||'',status:record.status||'',note:record.note||'',salesName:record.salesName||'',followup:record.followup||false};
   try{
     var res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
@@ -349,7 +349,7 @@ async function submitRecord(){
     else if(saveBtn)saveBtn.textContent='冷卻中 '+sec+'s';
   },1000);
   var rec={id:Date.now(),date:data.date,item:data.item,name:data.name,product:data.product,status:data.status,note:data.note,salesName:data.salesName,followup:data.followup,synced:false};
-  var result=await pushToNotion(rec);
+  var result=await pushToSheets(rec);
   rec.synced=result.ok;
   var all=getRecords();all.push(rec);saveRecords(all);
   if(result.ok){showMsg('form-msg','✓ 已成功儲存到試算表！','ok');clearForm();}
@@ -443,7 +443,7 @@ function renderList(){
   }
   if(preview)preview.textContent=buildMyMessage(recs);
   el.innerHTML=recs.map(function(r){
-    return '<div class="record"><div class="record-header"><div class="record-name">'+r.name+'</div><div class="record-top-right">'+(r.salesName?'<div class="record-sales">'+r.salesName+'</div>':'')+'<button class="delete-btn" onclick="deleteRecord('+r.id+')">✕ 刪除</button></div></div><div class="record-meta">'+r.date+(r.item?' &nbsp;·&nbsp; '+r.item:'')+(r.product?' &nbsp;·&nbsp; '+r.product:'')+(r.note?'<br>備註：'+r.note:'')+'</div><div class="record-badges">'+statusBadge(r.status)+'<span class="badge '+(r.synced?'b-synced':'b-local')+'">'+(r.synced?'Notion ✓':'本機')+'</span></div></div>';
+    return '<div class="record"><div class="record-header"><div class="record-name">'+r.name+'</div><div class="record-top-right">'+(r.salesName?'<div class="record-sales">'+r.salesName+'</div>':'')+'<button class="delete-btn" onclick="deleteRecord('+r.id+')">✕ 刪除</button></div></div><div class="record-meta">'+r.date+(r.item?' &nbsp;·&nbsp; '+r.item:'')+(r.product?' &nbsp;·&nbsp; '+r.product:'')+(r.note?'<br>備註：'+r.note:'')+'</div><div class="record-badges">'+statusBadge(r.status)+'<span class="badge '+(r.synced?'b-synced':'b-local')+'">'+(r.synced?'試算表 ✓':'本機')+'</span></div></div>';
   }).join('');
 }
 
