@@ -178,7 +178,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
     <!-- B. 今日全隊 -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;margin-top:20px">
-      <div class="section-label" style="margin:0">B．今日全店（Notion）</div>
+      <div class="section-label" style="margin:0">B．今日全店（試算表）</div>
       <button onclick="loadTeamRecords()" style="font-size:11px;font-weight:700;background:var(--black);color:var(--lime);border:none;padding:4px 10px;cursor:pointer;letter-spacing:0.5px">重新整理</button>
     </div>
     <div class="counter-bar">
@@ -352,8 +352,8 @@ async function submitRecord(){
   var result=await pushToNotion(rec);
   rec.synced=result.ok;
   var all=getRecords();all.push(rec);saveRecords(all);
-  if(result.ok){showMsg('form-msg','✓ 已成功同步到 Notion！','ok');clearForm();}
-  else{showMsg('form-msg','⚠ 已存本機，Notion 失敗：'+(result.msg||''),'err',8000);}
+  if(result.ok){showMsg('form-msg','✓ 已成功儲存到試算表！','ok');clearForm();}
+  else{showMsg('form-msg','⚠ 已存本機，試算表同步失敗：'+(result.msg||''),'err',8000);}
 }
 
 function clearForm(){
@@ -363,7 +363,7 @@ function clearForm(){
 }
 
 function deleteRecord(id){
-  if(!confirm('確定要刪除這筆紀錄嗎？（只會從本機刪除，Notion 需手動刪除）'))return;
+  if(!confirm('確定要刪除這筆紀錄嗎？（只會從本機刪除，試算表不會自動刪除）'))return;
   saveRecords(getRecords().filter(function(r){return r.id!==id;}));
   renderList();
 }
@@ -458,7 +458,7 @@ async function sendViaLine(msg){
 
 async function sendNow(){
   if(sendCooldown){showMsg('list-msg','請稍候，10 秒內不能重複傳送','info');return;}
-  showMsg('list-msg','從 Notion 讀取今日全店資料...','info',0);
+  showMsg('list-msg','從試算表讀取今日全店資料...','info',0);
   sendCooldown=true;
   var btn=document.getElementById('send-btn');
   btn.disabled=true;
